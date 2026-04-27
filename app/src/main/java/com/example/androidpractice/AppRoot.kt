@@ -167,18 +167,14 @@ fun AppRoot() {
 
             composable("edit_profile") {
                 val ctx = LocalContext.current
-                val profileRepository = remember {
-                    ProfileRepositoryImpl(ctx.applicationContext)
-                }
-                val profileViewModel: ProfileViewModel = viewModel(
-                    factory = ProfileViewModelFactory(profileRepository)
-                )
+                val profileRepository = remember { ProfileRepositoryImpl(ctx.applicationContext) }
+                val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(profileRepository))
                 val profileState by profileViewModel.profile.collectAsState()
 
                 EditProfileScreen(
                     initialProfile = profileState,
                     onSave = { newProfile ->
-                        profileViewModel.saveProfile(newProfile)
+                        profileViewModel.saveProfile(newProfile, ctx)
                         navController.popBackStack()
                     },
                     onBack = { navController.popBackStack() }

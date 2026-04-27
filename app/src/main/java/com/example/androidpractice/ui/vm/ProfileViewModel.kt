@@ -17,6 +17,12 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.os.Build
+import com.example.androidpractice.utils.ReminderReceiver
+import java.util.Calendar
+import android.net.Uri
 
 class ProfileViewModel(
     private val repository: ProfileRepository
@@ -37,9 +43,73 @@ class ProfileViewModel(
         }
     }
 
-    fun saveProfile(profile: Profile) {
+    fun scheduleReminder(context: Context, time: String, studentName: String) {
+        if (time.isBlank()) return
+        val parts = time.split(":")
+        if (parts.size != 2) return
+        val hour = parts[0].toIntOrNull() ?: return
+        val minute = parts[1].toIntOrNull() ?: return
+
+        cancelReminder(context)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (!alarmManager.canScheduleExactAlarms()) {
+                val intent = Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                intent.data = Uri.parse("package:${context.packageName}")
+                context.startActivity(intent)
+                return
+            }
+        }
+
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+            if (before(Calendar.getInstance())) {
+                add(Calendar.DAY_OF_YEAR, 1) // если время уже прошло, ставим на завтра
+            }
+        }
+
+        val intent = Intent(context, ReminderReceiver::class.java).apply {
+            putExtra("profile_name", studentName)
+        }
+        val pendingIntent = PendingIntent.getBroadcast(
+            context, 0, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        try {
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                pendingIntent
+            )
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun cancelReminder(context: Context) {
+        val intent = Intent(context, ReminderReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context, 0, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
+    }
+
+    fun saveProfile(profile: Profile, context: Context) {
         viewModelScope.launch {
             repository.saveProfile(profile)
+            _profile.value = profile
+            if (profile.reminderTime.isNotBlank()) {
+                scheduleReminder(context, profile.reminderTime, profile.name)
+            } else {
+                cancelReminder(context)
+            }
         }
     }
 

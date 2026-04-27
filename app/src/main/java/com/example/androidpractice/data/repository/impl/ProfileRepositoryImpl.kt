@@ -20,6 +20,7 @@ class ProfileRepositoryImpl(private val context: Context) : ProfileRepository {
         val NAME = stringPreferencesKey("name")
         val AVATAR_URI = stringPreferencesKey("avatar_uri")
         val RESUME_URL = stringPreferencesKey("resume_url")
+        val REMINDER_TIME = stringPreferencesKey("reminder_time")   // новый
     }
 
     override suspend fun getProfile(): Profile {
@@ -27,7 +28,8 @@ class ProfileRepositoryImpl(private val context: Context) : ProfileRepository {
         return Profile(
             name = prefs[Keys.NAME] ?: "",
             avatarUri = prefs[Keys.AVATAR_URI] ?: "",
-            resumeUrl = prefs[Keys.RESUME_URL] ?: ""
+            resumeUrl = prefs[Keys.RESUME_URL] ?: "",
+            reminderTime = prefs[Keys.REMINDER_TIME] ?: ""
         )
     }
 
@@ -36,6 +38,7 @@ class ProfileRepositoryImpl(private val context: Context) : ProfileRepository {
             prefs[Keys.NAME] = profile.name
             prefs[Keys.AVATAR_URI] = profile.avatarUri
             prefs[Keys.RESUME_URL] = profile.resumeUrl
+            prefs[Keys.REMINDER_TIME] = profile.reminderTime
         }
     }
 

@@ -1,21 +1,22 @@
 package com.example.androidpractice.ui.screens
 
 import android.Manifest
+import android.app.TimePickerDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
+import android.widget.TimePicker
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,7 +32,7 @@ import coil.request.ImageRequest
 import com.example.androidpractice.domain.model.Profile
 import java.io.File
 import java.io.FileOutputStream
-import androidx.compose.material.icons.filled.ArrowBack
+import java.util.Calendar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,15 +45,37 @@ fun EditProfileScreen(
     var name by remember { mutableStateOf(initialProfile.name) }
     var avatarUri by remember { mutableStateOf(initialProfile.avatarUri) }
     var resumeUrl by remember { mutableStateOf(initialProfile.resumeUrl) }
+    var reminderTime by remember { mutableStateOf(initialProfile.reminderTime) }
+    var timeError by remember { mutableStateOf<String?>(null) }
+
+    fun validateTime(time: String): Boolean {
+        return Regex("^([01]?[0-9]|2[0-3]):[0-5][0-9]$").matches(time)
+    }
 
     val context = LocalContext.current
+    val showTimePicker = remember { mutableStateOf(false) }
+
+    if (showTimePicker.value) {
+        val calendar = Calendar.getInstance()
+        TimePickerDialog(
+            context,
+            { _: TimePicker, hour: Int, minute: Int ->
+                reminderTime = String.format("%02d:%02d", hour, minute)
+                timeError = null
+            },
+            calendar.get(Calendar.HOUR_OF_DAY),
+            calendar.get(Calendar.MINUTE),
+            true
+        ).also {
+            it.show()
+            showTimePicker.value = false
+        }
+    }
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let {
-            avatarUri = it.toString()
-        }
+        uri?.let { avatarUri = it.toString() }
     }
 
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -68,21 +91,12 @@ fun EditProfileScreen(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         val cameraGranted = permissions[Manifest.permission.CAMERA] ?: false
-        val storageGranted = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            permissions[Manifest.permission.READ_EXTERNAL_STORAGE] ?: false
-        } else {
-            permissions[Manifest.permission.READ_MEDIA_IMAGES] ?: false
-        }
         if (cameraGranted) {
             cameraLauncher.launch(null)
-        } else {
         }
     }
 
-    fun pickFromGallery() {
-        galleryLauncher.launch("image/*")
-    }
-
+    fun pickFromGallery() = galleryLauncher.launch("image/*")
     fun takePhoto() {
         when {
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
@@ -122,8 +136,7 @@ fun EditProfileScreen(
                 modifier = Modifier
                     .size(120.dp)
                     .clip(CircleShape)
-                    .clickable {
-                    }
+                    .clickable { }
             ) {
                 if (avatarUri.isNotBlank()) {
                     AsyncImage(
@@ -146,15 +159,9 @@ fun EditProfileScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Button(onClick = { pickFromGallery() }) {
-                    Text("Галерея")
-                }
-                Button(onClick = { takePhoto() }) {
-                    Text("Камера")
-                }
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Button(onClick = { pickFromGallery() }) { Text("Галерея") }
+                Button(onClick = { takePhoto() }) { Text("Камера") }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -175,11 +182,46 @@ fun EditProfileScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = reminderTime,
+                onValueChange = {
+                    reminderTime = it
+                    timeError = if (validateTime(it)) null else "Неверный формат. Используйте HH:mm"
+                },
+                label = { Text("Время любимой пары") },
+                isError = timeError != null,
+                supportingText = { timeError?.let { Text(it) } },
+                trailingIcon = {
+                    IconButton(onClick = { showTimePicker.value = true }) {
+                        Icon(Icons.Default.AccessTime, contentDescription = "Выбрать время")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
-                    onSave(Profile(name, avatarUri, resumeUrl))
+                    // Проверка на пустое поле
+                    if (reminderTime.isBlank()) {
+                        timeError = "Поле обязательно для заполнения"
+                        return@Button
+                    }
+                    // Проверка на корректный формат
+                    if (!validateTime(reminderTime)) {
+                        timeError = "Неверный формат. Используйте HH:mm"
+                        return@Button
+                    }
+                    val updatedProfile = Profile(
+                        name = name,
+                        avatarUri = avatarUri,
+                        resumeUrl = resumeUrl,
+                        reminderTime = reminderTime
+                    )
+                    onSave(updatedProfile)
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
