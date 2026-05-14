@@ -1,7 +1,6 @@
-package com.example.androidpractice.ui.screens
+package com.example.androidpractice.feature.profile.ui
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -18,7 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.androidpractice.ui.vm.ProfileViewModel
 
 @Composable
 fun ProfileScreen(

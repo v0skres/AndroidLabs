@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,18 +13,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
-import com.example.androidpractice.ui.screens.ProfileScreen
-import com.example.androidpractice.ui.screens.EditProfileScreen
-import com.example.androidpractice.ui.vm.ProfileViewModel
-import com.example.androidpractice.ui.vm.ProfileViewModelFactory
-import com.example.androidpractice.data.repository.impl.ProfileRepositoryImpl
+import com.example.androidpractice.feature.profile.ui.ProfileScreen
+import com.example.androidpractice.feature.profile.ui.EditProfileScreen
+import com.example.androidpractice.feature.profile.ui.ProfileViewModel
+import com.example.androidpractice.feature.profile.ui.ProfileViewModelFactory
+import com.example.androidpractice.feature.profile.data.repository.ProfileRepositoryImpl
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.androidpractice.ui.screens.FavoritesScreen
 import com.example.androidpractice.ui.screens.RepoDetailsScreen
 import com.example.androidpractice.ui.screens.ReposListScreen
-import com.example.androidpractice.ui.screens.SettingsRoute
 import com.example.androidpractice.ui.vm.*
 import android.widget.Toast
 

@@ -37,7 +37,7 @@
         </provider>
 
         <receiver
-            android:name=".utils.ReminderReceiver"
+            android:name="com.example.androidpractice.feature.profile.utils.ReminderReceiver"
             android:exported="false" />
     </application>
 

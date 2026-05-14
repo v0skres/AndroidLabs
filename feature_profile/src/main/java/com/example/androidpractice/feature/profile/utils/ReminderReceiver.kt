@@ -1,4 +1,4 @@
-package com.example.androidpractice.utils
+package com.example.androidpractice.feature.profile.utils
 
 import android.content.BroadcastReceiver
 import android.content.Context

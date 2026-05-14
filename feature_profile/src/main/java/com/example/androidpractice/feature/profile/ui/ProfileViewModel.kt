@@ -1,4 +1,4 @@
-package com.example.androidpractice.ui.vm
+package com.example.androidpractice.feature.profile.ui
 
 import android.content.Context
 import android.content.Intent
@@ -6,8 +6,6 @@ import android.os.Environment
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.androidpractice.domain.model.Profile
-import com.example.androidpractice.domain.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,9 +18,12 @@ import java.io.File
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.os.Build
-import com.example.androidpractice.utils.ReminderReceiver
+import com.example.androidpractice.feature.profile.utils.ReminderReceiver
 import java.util.Calendar
 import android.net.Uri
+import android.provider.Settings
+import com.example.androidpractice.feature.profile.domain.model.Profile
+import com.example.androidpractice.feature.profile.domain.repository.ProfileRepository
 
 class ProfileViewModel(
     private val repository: ProfileRepository
@@ -55,7 +56,7 @@ class ProfileViewModel(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             if (!alarmManager.canScheduleExactAlarms()) {
-                val intent = Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
                 intent.data = Uri.parse("package:${context.packageName}")
                 context.startActivity(intent)
                 return

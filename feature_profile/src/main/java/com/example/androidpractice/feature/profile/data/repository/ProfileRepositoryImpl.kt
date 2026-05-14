@@ -1,4 +1,4 @@
-package com.example.androidpractice.data.repository.impl
+package com.example.androidpractice.feature.profile.data.repository
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -6,11 +6,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.androidpractice.domain.model.Profile
-import com.example.androidpractice.domain.repository.ProfileRepository
+import com.example.androidpractice.feature.profile.domain.model.Profile
+import com.example.androidpractice.feature.profile.domain.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlin.text.get
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_profile")
 

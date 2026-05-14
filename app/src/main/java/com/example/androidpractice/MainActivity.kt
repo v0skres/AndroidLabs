@@ -6,7 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.androidpractice.ui.theme.AndroidPracticeTheme
-import com.example.androidpractice.utils.NotificationHelper
+import com.example.androidpractice.feature.profile.utils.NotificationHelper
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

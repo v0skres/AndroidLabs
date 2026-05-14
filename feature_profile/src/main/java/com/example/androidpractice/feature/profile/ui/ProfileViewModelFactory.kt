@@ -1,8 +1,8 @@
-package com.example.androidpractice.ui.vm
+package com.example.androidpractice.feature.profile.ui
 
+import com.example.androidpractice.feature.profile.domain.repository.ProfileRepository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.androidpractice.domain.repository.ProfileRepository
 
 class ProfileViewModelFactory(
     private val repository: ProfileRepository

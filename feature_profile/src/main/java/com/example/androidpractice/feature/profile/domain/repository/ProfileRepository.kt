@@ -1,6 +1,6 @@
-package com.example.androidpractice.domain.repository
+package com.example.androidpractice.feature.profile.domain.repository
 
-import com.example.androidpractice.domain.model.Profile
+import com.example.androidpractice.feature.profile.domain.model.Profile
 import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {

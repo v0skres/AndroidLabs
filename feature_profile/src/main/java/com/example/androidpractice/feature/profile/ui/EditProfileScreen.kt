@@ -1,4 +1,4 @@
-package com.example.androidpractice.ui.screens
+package com.example.androidpractice.feature.profile.ui
 
 import android.Manifest
 import android.app.TimePickerDialog
@@ -29,10 +29,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.androidpractice.domain.model.Profile
+import com.example.androidpractice.feature.profile.domain.model.Profile
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Calendar
+import kotlin.text.get
 
 
 @OptIn(ExperimentalMaterial3Api::class)

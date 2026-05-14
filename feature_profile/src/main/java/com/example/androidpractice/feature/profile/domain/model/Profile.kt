@@ -1,4 +1,4 @@
-package com.example.androidpractice.domain.model
+package com.example.androidpractice.feature.profile.domain.model
 
 data class Profile(
     val name: String = "",
